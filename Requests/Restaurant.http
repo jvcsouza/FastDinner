@@ -1,0 +1,14 @@
+@url = {{host}}/restaurant
+@id = "";
+
+## Criação
+POST {{url}}
+Content-Type: application/json
+
+# {
+#     "Name": "Menu Principal"
+# }
+
+### Listagem
+GET {{url}}
+Content-Type: application/json

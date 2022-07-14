@@ -1,0 +1,11 @@
+@url = https://localhost:7200/account
+@id = "";
+
+### Criação de um novo menu
+POST {{url}}
+Content-Type: application/json
+
+{
+    "username": "Menu Principal",
+    "password": "Menu Principal"
+}
