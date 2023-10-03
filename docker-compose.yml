@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  fastdinner.api:
+    image: ${DOCKER_REGISTRY-}fastdinnerapi
+    build:
+      context: .
+      dockerfile: FastDinner.Api/Dockerfile

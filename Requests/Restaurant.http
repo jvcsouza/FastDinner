@@ -1,0 +1,25 @@
+@url = {{host}}/restaurant
+@id = f2053c55-d75c-4eb7-a529-a72a1a3cc380
+
+### @name Criação
+POST {{url}}
+Content-Type: application/json
+# {
+#     "Name": "Menu Principal"
+# }
+
+### @name Atualização
+PUT {{url}}/{{id}}
+Content-Type: application/json
+
+{
+    "id": "f2053c55-d75c-4eb7-a529-a72a1a3cc380",
+    "name": "Restaurant 1",
+    "address": "Address teste 1",
+    "phone": "0123456789",
+    "email": "teste@teste.com"
+}
+
+### @name Listagem
+GET {{url}}
+Content-Type: application/json

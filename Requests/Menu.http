@@ -1,0 +1,33 @@
+@url = {{host}}/menu
+@id = 3ac8eab9-3c95-4584-b250-8522ed23b780
+
+### @name Criação de um novo menu
+POST {{url}}
+Content-Type: application/json
+
+{
+    "Name": "Menu Principal"
+}
+
+### @name Alteração de um menu
+PUT {{url}}/{{id}}
+Content-Type: application/json
+
+{
+    "Name": "Menu Principal"
+}
+
+### @name Listagem de menus
+GET {{url}}
+Content-Type: application/json
+X-Resturant-ID: C5987995-42DC-4512-8281-D29E82686D88
+
+### Adicionar uma categoria ao menu
+POST {{url}}/{{id}}/category
+Content-Type: application/json
+
+{
+    "MenuId": "3ac8eab9-3c95-4584-b250-8522ed23b780",
+    "Name": "Bebidas",
+    "Description": ""
+}

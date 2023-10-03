@@ -1,0 +1,23 @@
+@url = {{host}}/product
+@id = 4e11eb1a-5696-472e-afba-ee55ffa28479
+
+### @name Criação
+POST {{url}}
+Content-Type: application/json
+
+{
+    "name": "Product 4"
+}
+
+### @name Atualização
+PUT {{url}}/{{id}}
+Content-Type: application/json
+
+{
+    "id": "4e11eb1a-5696-472e-afba-ee55ffa28479",
+    "name": "Product 1"
+}
+
+### @name Listagem
+GET {{url}}
+Content-Type: application/json
