@@ -1,5 +1,4 @@
 using FastDinner.Application.Commands;
-using FastDinner.Application.Commands.Table;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Contracts.Product;
 using FastDinner.Domain.Model;

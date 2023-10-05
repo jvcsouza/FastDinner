@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FastDinner.Application.Commands.Menu;
 using FastDinner.Application.Queries;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FastDinner.Api.Controllers
 {
+    [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class MenuController : ApiController
     {
         private readonly ISender _mediator;
@@ -38,7 +40,7 @@ namespace FastDinner.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = menu.Id }, menu);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateMenuRequest request)
         {
             if (id != request.Id)
@@ -54,7 +56,7 @@ namespace FastDinner.Api.Controllers
             return Ok(menu);
         }
 
-        [HttpPost("{menuId}/category")]
+        [HttpPost("{menuId:guid}/category")]
         public async Task<IActionResult> PostCategory(Guid menuId, [FromBody] AddCategoryMenuRequest request)
         {
             if (menuId != request.MenuId)
@@ -69,7 +71,7 @@ namespace FastDinner.Api.Controllers
             return Ok(menu);
         }
 
-        [HttpGet("{menuId}/category")]
+        [HttpGet("{menuId:guid}/category")]
         public async Task<IActionResult> GetCategories(Guid menuId)
         {
             if (menuId == Guid.NewGuid())
@@ -80,7 +82,7 @@ namespace FastDinner.Api.Controllers
             return Ok(menuCategories);
         }
 
-        [HttpPatch("{menuId}/category/{categoryId}/item")]
+        [HttpPatch("{menuId:guid}/category/{categoryId:guid}/item")]
         public async Task<IActionResult> PatchCategoryItem(Guid menuId, Guid categoryId, [FromBody] AddItemToCategoryMenuRequest request)
         {
             if (menuId != request.MenuId)

@@ -24,7 +24,7 @@ namespace FastDinner.Infrastructure.Utils
         public static Type NewType(string typeName = "dynamicType",
             PropertyInfo[] propertyInfos = null, Type parent = null)
         {
-            var props = new List<PropertyInfo>(propertyInfos).DistinctBy(x => x.Name);
+            var props = new List<PropertyInfo>(propertyInfos!).DistinctBy(x => x.Name);
 
             var tb = GetTypeBuilder(typeName, parent);
             var constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);

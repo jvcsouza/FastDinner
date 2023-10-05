@@ -1,6 +1,6 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using FastDinner.Api.Services;
 using Microsoft.AspNetCore.Http;
 using FastDinner.Application.Common.Interfaces.Services;
 using FastDinner.Application.Common;
@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FastDinner.Api.Middleware;
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public class ApplicationMiddleware
 {
     private readonly RequestDelegate _next;
@@ -25,7 +26,7 @@ public class ApplicationMiddleware
         await _next(context);
     }
 
-    private async Task CreateApplicationScope(HttpContext context, IAppSettings appSettings,
+    private static async Task CreateApplicationScope(HttpContext context, IAppSettings appSettings,
         IServiceProvider serviceProvider)
     {
         if (!context.Request.Headers.TryGetValue("x-restaurant-id", out var restaurantIdHeader))
@@ -50,23 +51,19 @@ public class ApplicationMiddleware
 
         var restaurantScope = await cacheProvider.GetOrAddAsync($"{settings.Dns}{resGuid}", async () =>
         {
+            // ReSharper disable once AccessToDisposedClosure
             var resRepository = scope.ServiceProvider.GetService<IRestaurantRepository>();
             var restaurant = await resRepository.GetByIdAsync(resGuid);
 
             if (restaurant is null)
                 throw new InvalidOperationException("Restaurant not found!");
 
-            var resScope = new RestaurantSettings() { Name = restaurant.Name, ResturantId = restaurant.Id };
+            var resScope = new RestaurantSettings { Name = restaurant.Name, ResturantId = restaurant.Id };
 
             return resScope;
 
         }).ConfigureAwait(true);
 
         RestaurantScope.CreateScope(restaurantScope);
-    }
-
-    private Task HandleExceptionAsync(HttpContext context, Exception ex)
-    {
-        throw new NotImplementedException();
     }
 }

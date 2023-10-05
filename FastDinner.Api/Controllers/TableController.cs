@@ -5,10 +5,12 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace FastDinner.Api.Controllers
 {
+    [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class TableController : ApiController
     {
         private readonly ISender _mediator;
@@ -27,7 +29,7 @@ namespace FastDinner.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var products = await _mediator.Send<IEnumerable<TableResponse>>(new TableQuery());

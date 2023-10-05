@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FastDinner.Application.Commands;
-using FastDinner.Application.Common;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Product;
 using MediatR;
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FastDinner.Api.Controllers
 {
+    [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class ProductController : ApiController
     {
         private readonly ISender _mediator;
@@ -35,7 +36,7 @@ namespace FastDinner.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateProductRequest request)
         {
             if (id != request.Id)

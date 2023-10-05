@@ -1,9 +1,11 @@
-﻿using FastDinner.Application.Common;
+﻿using System.Diagnostics.CodeAnalysis;
+using FastDinner.Application.Common;
 using FastDinner.Application.Common.Interfaces.Services;
 #pragma warning disable VSTHRD002
 
 namespace FastDinner.Infrastructure.Services
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class AppSettings : IAppSettings
     {
         private const string SUFIX = "_settings";

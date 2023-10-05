@@ -60,7 +60,7 @@ public class DinnerContext : DbContext
         }
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {
         SetDefaults(cancellationToken);
 

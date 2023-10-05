@@ -9,7 +9,7 @@
             CallContext<RestaurantSettings>.SetData(TenantKey, context);
         }
 
-        public static RestaurantSettings GetTenantScope()
+        public static RestaurantSettings GetRestaurantScope()
         {
             return CallContext<RestaurantSettings>.GetData(TenantKey);
         }

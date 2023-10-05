@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FastDinner.Application.Commands;
 using FastDinner.Application.Queries;
@@ -9,6 +10,7 @@ using MediatR;
 
 namespace FastDinner.Api.Controllers
 {
+    [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class RestaurantController : ApiController
     {
         private readonly ISender _mediator;
@@ -39,7 +41,7 @@ namespace FastDinner.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = restaurant.Id }, restaurant);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateRestaurantRequest request)
         {
             if (id != request.Id)

@@ -25,7 +25,7 @@ public class MenuQueryHandler :
 
     public async Task<IEnumerable<MenuCategoriesResponse>> Handle(MenuCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var menuCategories = await _menuRepository.GetAllCategories(request.menuId);
+        var menuCategories = await _menuRepository.GetAllCategories(request.MenuId);
 
         return menuCategories.Select(x => new MenuCategoriesResponse(x.Id, x.Name));
     }

@@ -3,4 +3,4 @@ using MediatR;
 
 namespace FastDinner.Application.Queries;
 
-public record ProductQuery() : IRequest<IEnumerable<ProductResponse>>;
+public record ProductQuery : IRequest<IEnumerable<ProductResponse>>;

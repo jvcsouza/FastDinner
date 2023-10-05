@@ -5,6 +5,7 @@ using MediatR;
 
 namespace FastDinner.Application.Handlers;
 
+// ReSharper disable once UnusedMember.Global
 public class ProductQueryHandler : 
     IRequestHandler<ProductQuery, IEnumerable<ProductResponse>>
 {

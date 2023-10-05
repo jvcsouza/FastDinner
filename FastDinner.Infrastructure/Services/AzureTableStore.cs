@@ -18,10 +18,10 @@ namespace FastDinner.Infrastructure.Services
             _client = new TableClient(connectionStr, tableName);
 
             _methodQuery = typeof(TableClient).GetMethod("Query",
-                new Type[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });
+                new[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });
 
             _methodFind = typeof(TableClient).GetMethod("GetEntity",
-                new Type[] { typeof(string), typeof(string), typeof(IEnumerable<string>), typeof(CancellationToken) });
+                new[] { typeof(string), typeof(string), typeof(IEnumerable<string>), typeof(CancellationToken) });
 
             //_method = typeof(TableClient).GetMethod("QueryAsync",
             //    new Type[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });
@@ -29,13 +29,13 @@ namespace FastDinner.Infrastructure.Services
 
         public async Task CreateIfNotExistsAsync()
         {
-            await _client.CreateIfNotExistsAsync(new CancellationToken());
+            await _client.CreateIfNotExistsAsync();
         }
 
         public Task<List<T>> GetAllPartitionsAsync<T>(string partitionKey) where T : class
         {
             var request = (dynamic)_methodQuery
-                .MakeGenericMethod(new Type[] { TypeBuilder.CopyWithParent<T, StoreItem>() })
+                .MakeGenericMethod(TypeBuilder.CopyWithParent<T, StoreItem>())
                 .Invoke(_client, new object[] { $"PartitionKey eq '{partitionKey}'", null, null, default(CancellationToken) });
 
             var lst = new List<T>();

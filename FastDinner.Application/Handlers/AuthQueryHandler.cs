@@ -25,7 +25,7 @@ public class AuthQueryHandler : IRequestHandler<LoginQuery, LoginResponse>
         if (user.Password != command.Password)
             throw new ApplicationException("Invalid email or password");
 
-        var (token, expirationDate) = _tokenGenerator.GenerateToken(new Dictionary<string, object>()
+        var (token, expirationDate) = _tokenGenerator.GenerateToken(new Dictionary<string, object>
         {
             {"id", user.Id},
             {"name", user.Name},

@@ -21,36 +21,39 @@ namespace FastDinner.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
         {
-            services.AddConfigurations(configuration);
-            services.AddAuthorization(configuration);
-            services.AddServices(configuration);
-            services.AddRepositories();
-
-            return services;
+            return services
+                .AddConfigurations(configuration)
+                .AddAuthorization(configuration)
+                .AddServices(configuration)
+                .AddRepositories();
         }
 
-        private static void AddServices(this IServiceCollection services, ConfigurationManager configuration)
+        private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddSingleton<ITokenGenerator, JwtTokenGenerator>();
             services.AddSingleton<ICacheProvider, SimpleMemoryCache>();
             services.AddScoped<AppScope>();
-            ;
-            services.AddSingleton<IAppSettings>(_ =>
+
+            services.AddSingleton<IAppSettings>(provider =>
             {
                 var config = configuration.GetSection(TableConfig.SectionName).Get<TableConfig>();
-                var cache = _.GetService<ICacheProvider>();
+                var cache = provider.GetService<ICacheProvider>();
                 var appSettings = new AppSettings(new AzureTableStore(Environment.GetEnvironmentVariable("TABLECONFIGSTR"), config.TableName), cache);
                 return appSettings;
 
             });
+
+            return services;
         }
 
-        private static void AddConfigurations(this IServiceCollection services, ConfigurationManager configuration)
+        private static IServiceCollection AddConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DatabaseConfig>(configuration.GetSection(DatabaseConfig.SectionName));
             services.Configure<JwtConfig>(configuration.GetSection(JwtConfig.SectionName));
             services.Configure<TableConfig>(configuration.GetSection(TableConfig.SectionName));
+
+            return services;
         }
 
         private static IServiceCollection AddRepositories(this IServiceCollection services)
@@ -58,17 +61,20 @@ namespace FastDinner.Infrastructure
             //services.AddDbContext<DinnerContext>((IServiceProvider provider, DbContextOptionsBuilder options)
             //    => options.UseSqlServer(provider.GetService<IOptions<DatabaseConfig>>().Value.ConnectionString));
 
-            services.AddDbContext<DinnerContext>((DbContextOptionsBuilder options)
+            services.AddDbContext<DinnerContext>(options
                 =>
             {
                 var settings = AppScope.Tenant;
 
+                var passBytes = Convert.FromBase64String(
+                        settings.Password ?? Environment.GetEnvironmentVariable("DBDATAPASS")!);
+
                 var connString = new SqlConnectionStringBuilder
                 {
-                    DataSource = settings?.DataSource ?? Environment.GetEnvironmentVariable("DBDATASOURCE"),
-                    InitialCatalog = settings?.Catalog ?? "FastDinner",
-                    UserID = settings?.User ?? "appservers",
-                    Password = settings?.Password ?? Encoding.UTF8.GetString(Convert.FromBase64String(Environment.GetEnvironmentVariable("DBDATAPASS")!)),
+                    DataSource = settings.DataSource,
+                    InitialCatalog = settings.Catalog,
+                    UserID = settings.User,
+                    Password = Encoding.UTF8.GetString(passBytes),
                     MultipleActiveResultSets = true,
                     ConnectTimeout = 60
                 };
@@ -92,7 +98,7 @@ namespace FastDinner.Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddAuthorization(this IServiceCollection services, ConfigurationManager configuration)
+        private static IServiceCollection AddAuthorization(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
             {
@@ -105,7 +111,7 @@ namespace FastDinner.Infrastructure
 
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,

@@ -61,7 +61,7 @@ public class Events
         Parameters = parameters;
     }
 
-    public Func<object[], Task> ActionOb { get; private set; }
+    public Func<object[], Task> ActionOb { get; }
 
-    public object[] Parameters { get; private set; }
+    public object[] Parameters { get; }
 }

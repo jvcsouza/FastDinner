@@ -3,7 +3,7 @@ namespace FastDinner.Contracts.Auth;
 public record LoginResponse(
     LoginUserResponse User,
     string Token,
-    DateTime expirationDate);
+    DateTime ExpirationDate);
 
 public record LoginUserResponse(
     Guid Id,

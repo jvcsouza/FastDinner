@@ -43,9 +43,23 @@ public class RestaurantCommandHandler :
 
         await _restaurantRepository.UpdateAsync(restaurant);
 
+        _unitOfWork.AddEventAfterSave(InsertOf, new[] { 1 });
+
         await _unitOfWork.CommitAsync();
 
         return new RestaurantResponse(restaurant.Id, restaurant.Name,
             restaurant.Address, restaurant.Phone, restaurant.Email);
+    }
+
+    private Task InsertOf(object[] arg)
+    {
+        _unitOfWork.AddEventAfterSave(InsertOfTwo, arg);
+
+        return Task.CompletedTask;
+    }
+
+    private Task InsertOfTwo(object[] arg)
+    {
+        return Task.CompletedTask;
     }
 }

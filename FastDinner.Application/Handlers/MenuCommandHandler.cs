@@ -122,7 +122,7 @@ public class MenuCommandHandler :
             menu.Description,
             menu.Image,
             menu.Categories.Select(x => new CategoryMenuResponse(x.Id, x.Name, x.Description,
-                x.MenuItems.Select(x => new MenuItemResponse(x.Id, x.Name, x.Description, x.Price))))
+                x.MenuItems.Select(e => new MenuItemResponse(e.Id, e.Name, e.Description, e.Price))))
         );
     }
 }
