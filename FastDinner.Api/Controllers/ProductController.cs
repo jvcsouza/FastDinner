@@ -24,8 +24,6 @@ namespace FastDinner.Api.Controllers
         {
             var products = await _mediator.Send<IEnumerable<ProductResponse>>(new ProductQuery());
 
-            var a = AppScope.Restaurant;
-
             return Ok(products);
         }
 

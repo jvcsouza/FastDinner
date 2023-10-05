@@ -18,11 +18,13 @@ namespace FastDinner.Application.Common
             _context = ctx;
         }
 
-        public static void SetDataInternal(string name, object data) =>
-            _context.Items[name] = data;
+        public static void SetDataInternal(string name, object data)
+        {
+            if (_context != null) _context.Items[name] = data;
+        }
 
         public static object GetDataInternal(string name) =>
-            _context.Items[name];
+            _context?.Items[name];
     }
 
     public class CallContext<T> : BaseContext

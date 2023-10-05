@@ -6,7 +6,6 @@ using FastDinner.Application.Common.Interfaces.Services;
 using FastDinner.Application.Common;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FastDinner.Api.Middleware;
 
@@ -43,14 +42,11 @@ public class ApplicationMiddleware
         if (settings is null)
             throw new InvalidOperationException("Tenant not found!");
 
-        //TenantScope.CreateScope(settings);
+        TenantScope.CreateScope(settings);
 
         await using var scope = serviceProvider.CreateAsyncScope();
         var cacheProvider = scope.ServiceProvider.GetService<ICacheProvider>();
-        var appScope = scope.ServiceProvider.GetService<AppScope>();
         var resGuid = Guid.Parse(restaurantIdHeader);
-
-        appScope.UseTenant(settings);
 
         var restaurantScope = await cacheProvider.GetOrAddAsync($"{settings.Dns}{resGuid}", async () =>
         {
@@ -66,9 +62,7 @@ public class ApplicationMiddleware
 
         }).ConfigureAwait(true);
 
-        //RestaurantScope.CreateScope(restaurantScope);
-
-        appScope.UseRestaurant(restaurantScope);
+        RestaurantScope.CreateScope(restaurantScope);
     }
 
     private Task HandleExceptionAsync(HttpContext context, Exception ex)

@@ -7,31 +7,45 @@ namespace FastDinner.Infrastructure.Persistence;
 
 public class DinnerContext : DbContext
 {
-    public DinnerContext(DbContextOptions<DinnerContext> options) : base(options)
-    {
+    private readonly AppScope _appScope;
 
+    public DinnerContext(DbContextOptions<DinnerContext> options, AppScope appScope) : base(options)
+    {
+        _appScope = appScope;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //foreach (var type in modelBuilder.Model.GetEntityTypes(typeof(IRestaurant)))
-        //    type.SetQueryFilter((IRestaurant e) => e.RestaurantId == AppScope.Restaurant.ResturantId);
 
         modelBuilder.Entity<Reservation>()
             .HasOne(x => x.Restaurant)
             .WithMany(x => x.Reservations)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired();
 
         modelBuilder.Entity<Product>()
-            .HasQueryFilter(x => x.RestaurantId == AppScope.Restaurant.ResturantId);
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
 
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Employee>()
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+
+        modelBuilder.Entity<Menu>()
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+
+        modelBuilder.Entity<Order>()
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+        
+        modelBuilder.Entity<Reservation>()
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+
+        modelBuilder.Entity<Table>()
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.AddInterceptors(new CommandInterceptor());
+
         base.OnConfiguring(optionsBuilder);
     }
 
@@ -41,15 +55,9 @@ public class DinnerContext : DbContext
                      .Where(w => w.State == EntityState.Added && w.Entity.RestaurantId == default))
         {
             property.Entity.RestaurantId = AppScope.Restaurant.ResturantId;
+
             cancellationToken.ThrowIfCancellationRequested();
         }
-
-        //foreach (var property in ChangeTracker.Entries<Entity>()
-        //             .Where(w => w.State == EntityState.Added || w.State == EntityState.Modified))
-        //{
-        //    property.Entity. = PropertyId != 0 ? PropertyId : x.Entity.IdProperty;
-        //    cancellationToken.ThrowIfCancellationRequested();
-        //}
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())

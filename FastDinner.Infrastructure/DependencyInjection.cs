@@ -76,9 +76,9 @@ namespace FastDinner.Infrastructure
                 options.UseSqlServer(connString.ConnectionString);
             });
 
-            var serviceProvider = services.BuildServiceProvider();
-            var dinnerContext = serviceProvider.GetService<DinnerContext>();
-            dinnerContext.Database.Migrate();
+            //var serviceProvider = services.BuildServiceProvider();
+            //var dinnerContext = serviceProvider.GetService<DinnerContext>();
+            //dinnerContext.Database.Migrate();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
