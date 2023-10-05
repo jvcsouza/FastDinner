@@ -2,7 +2,7 @@
 
 Bem-vindo ao Sistema de Gerenciamento de Restaurante, onde a comida é boa e a gestão é ainda melhor! 🎉
 
-![Chef Cozinheiro](https://media.giphy.com/media/3oEduK8G4fLTFIDdKo/giphy.gif)
+![Chef Cozinheiro](https://media.giphy.com/media/13LlAxmDwAkopO/giphy.gif)
 
 ## 🍕 Contexto
 
