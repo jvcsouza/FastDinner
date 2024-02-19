@@ -1,7 +1,7 @@
 using FastDinner.Contracts.Restaurant;
 using MediatR;
 
-namespace FastDinner.Application.Commands;
+namespace FastDinner.Application.Commands.Restaurant;
 
 public record UpdateRestaurantCommand(
     Guid Id,

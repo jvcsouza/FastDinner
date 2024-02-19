@@ -1,6 +1,7 @@
 using FastDinner.Application.Commands.Menu;
 using FastDinner.Application.Common;
 using FastDinner.Application.Common.Interfaces.Repositories;
+using FastDinner.Application.Common.Interfaces.Services;
 using FastDinner.Contracts.Menu;
 using FastDinner.Domain.Model;
 using MediatR;
@@ -33,11 +34,7 @@ public class MenuCommandHandler :
     private async Task<Menu> GetMenuAsync(Guid id)
     {
         var menu = await _menuRepository.GetByIdAsync(id);
-
-        if (menu == null)
-            throw new ApplicationException($"Menu with id {id} not found");
-
-        return menu;
+        return menu ?? throw new ApplicationException($"Menu with id {id} not found");
     }
 
     public async Task<MenuResponse> Handle(CreateMenuCommand command, CancellationToken cancellationToken)
@@ -46,12 +43,14 @@ public class MenuCommandHandler :
 
         var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
 
-        if (restaurant == null)
+        if (restaurant is null)
             throw new ApplicationException($"Restaurant with id {restaurantId} not found");
 
-        var urlImage = command.Image?.ToString();
+        var urlImage = command.Image;
 
         var newMenu = restaurant.IncludeMenu(command.Name, command.Description, urlImage);
+
+        await _menuRepository.CreateAsync(newMenu);
 
         await _unitOfWork.CommitAsync();
 
@@ -77,24 +76,32 @@ public class MenuCommandHandler :
 
     public async Task<MenuDetailResponse> Handle(AddCategoryToMenuCommand command, CancellationToken cancellationToken)
     {
-        await _unitOfWork.ExecuteTransaction(async () =>
-        {
-            var menu = await GetMenuAsync(command.MenuId);
-
-            menu.AddCategory(new MenuCategory(command.CategoryName, command.Description));
-
-            await _menuRepository.UpdateAsync(menu);
-
-        });
-
         var menu = await GetMenuAsync(command.MenuId);
+
+        //var newCategory = await _unitOfWork.Add(new MenuCategory(command.CategoryName, command.Description));
+
+        //menu.AddCategory(newCategory);
+
+        menu.AddCategory(command.CategoryName, command.Description);
+
+        //await _menuRepository.UpdateAsync(menu);
+
+        //var resto = await _restaurantRepository.GetByIdAsync(menu.RestaurantId);
+
+        //menu.RestaurantId = resto.Id;
+        //menu.Restaurant = resto;
+
+        //await _menuRepository.UpdateAsync(menu);
+
+        await _unitOfWork.CommitAsync();
 
         return new MenuDetailResponse(
             menu.Id,
             menu.Name,
             menu.Description,
             menu.Image,
-            menu.Categories.Select(x => new CategoryMenuResponse(x.Id, x.Name, x.Description,
+            menu.Main,
+            menu.Categories.Where(x => x.MenuItems != null).Select(x => new CategoryMenuResponse(x.Id, x.Name, x.Description,
                 x.MenuItems.Select(e => new MenuItemResponse(e.Id, e.Name, e.Description, e.Price))))
         );
     }
@@ -105,14 +112,9 @@ public class MenuCommandHandler :
 
         var category = menu.Categories.FirstOrDefault(x => x.Id == command.CategoryId);
 
-        if (category == null)
-            throw new ApplicationException($"Category with id {command.CategoryId} not found");
-
         var product = await _productRepository.GetByIdAsync(command.ProductId);
 
-        category.AddItem(new MenuItem(product, command.ProductDescription, command.Price));
-
-        // await _menuRepository.Update(menu);
+        menu.AddProduct(product, category, command.ProductDescription, command.Price);
 
         await _unitOfWork.CommitAsync();
 
@@ -121,6 +123,7 @@ public class MenuCommandHandler :
             menu.Name,
             menu.Description,
             menu.Image,
+            menu.Main,
             menu.Categories.Select(x => new CategoryMenuResponse(x.Id, x.Name, x.Description,
                 x.MenuItems.Select(e => new MenuItemResponse(e.Id, e.Name, e.Description, e.Price))))
         );

@@ -25,7 +25,7 @@ public class SimpleMemoryCache : ICacheProvider
             return new CacheItemPolicy { AbsoluteExpiration = _dateTimeProvider.UtcNow.Add(expiration.Value) };
         }
 
-        return _policy ??= new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddMinutes(15) };
+        return _policy ??= new CacheItemPolicy { AbsoluteExpiration = _dateTimeProvider.UtcNow.AddMinutes(15) };
     }
 
     public T GetOrAdd<T>(string key, Func<T> createItem, TimeSpan? expiration)

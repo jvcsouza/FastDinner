@@ -22,6 +22,15 @@ public class MenuRepository : BaseRepository<Menu>, IMenuRepository
     {
         return Context.Menus
             .Include(x => x.Categories)
+            .Include("Categories.MenuItems")
             .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public override async Task<IEnumerable<Menu>> GetAllAsync()
+    {
+        return await Context.Menus
+            .Include(x => x.Categories)
+            .Include("Categories.MenuItems")
+            .ToListAsync();
     }
 }

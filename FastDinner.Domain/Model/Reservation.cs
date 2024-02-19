@@ -2,11 +2,16 @@ using FastDinner.Domain.Contracts;
 
 namespace FastDinner.Domain.Model;
 
-public class Reservation : Entity, IRestaurant
+public sealed class Reservation : Entity, IRestaurant
 {
-    public Reservation()
+    private Reservation() { }
+
+    public Reservation(Customer customer, Table table, DateTime checkInDate)
     {
         Id = Guid.NewGuid();
+        Customer = customer;
+        Table = table;
+        CheckInDate = checkInDate;
     }
 
     public Guid TableId { get; set; }
@@ -16,9 +21,9 @@ public class Reservation : Entity, IRestaurant
     public bool IsCancel { get; set; }
     public DateTime? CheckInDate { get; set; }
 
-    public virtual Customer Customer { get; set; }
-    public virtual Table Table { get; set; }
-    public virtual Restaurant Restaurant { get; set; }
+    public Customer Customer { get; set; }
+    public Table Table { get; set; }
+    public Restaurant Restaurant { get; set; }
 
     public void CancelReservation()
     {

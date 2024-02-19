@@ -7,7 +7,6 @@ public record AddMenuItemToCategoryCommand(
     Guid MenuId,
     Guid CategoryId,
     Guid ProductId,
-    string ProductName,
     string ProductDescription,
     decimal Price
 ) : IRequest<MenuDetailResponse>;

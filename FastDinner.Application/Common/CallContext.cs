@@ -22,8 +22,7 @@ namespace FastDinner.Application.Common
             if (_context != null) _context.Items[name] = data;
         }
 
-        public static object GetDataInternal(string name) =>
-            _context?.Items[name];
+        public static object GetDataInternal(string name) => _context?.Items[name];
     }
 
     public class CallContext<T> : BaseContext

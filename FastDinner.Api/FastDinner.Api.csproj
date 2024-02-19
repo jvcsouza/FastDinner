@@ -7,6 +7,7 @@
     <UserSecretsId>72494e9b-7e5c-4355-8948-1865fc71ab71</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
@@ -16,5 +17,8 @@
   <ItemGroup>
     <ProjectReference Include="..\FastDinner.Application\FastDinner.Application.csproj" />
     <ProjectReference Include="..\FastDinner.Infrastructure\FastDinner.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

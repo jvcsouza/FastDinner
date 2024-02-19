@@ -3,12 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using FastDinner.Infrastructure;
 using FastDinner.Application;
 using FastDinner.Api.Middleware;
-using FastDinner.Api.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
+using FastDinner.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host
+    .UseServiceProviderFactory(new StructureMapProvider());
 
 //builder.Services.AddSingleton<IDependencyResolver, DependencyResolver>(
 //    options => new DependencyResolver(options.CreateScope()));
@@ -19,7 +22,13 @@ builder.Services
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(x => x.OperationFilter<AddRequiredHeaderParameter>());
+
+builder.Services.AddSwaggerGen(x =>
+{
+    x.OperationFilter<AddRequiredHeaderParameter>();
+    x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() { In = ParameterLocation.Header });
+
+});
 
 var app = builder.Build();
 {
@@ -42,7 +51,7 @@ var app = builder.Build();
 
     app.MapControllers();
 
-    DependencyResolver.InitializeIoc(app.Services);
+    //DependencyResolver.InitializeIoc(app.Services);
 
     app.Run();
 }

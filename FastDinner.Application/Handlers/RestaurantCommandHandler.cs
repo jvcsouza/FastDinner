@@ -1,4 +1,4 @@
-using FastDinner.Application.Commands;
+using FastDinner.Application.Commands.Restaurant;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Contracts.Restaurant;
 using FastDinner.Domain.Model;
@@ -41,11 +41,11 @@ public class RestaurantCommandHandler :
         // Throw new NotFoundException(nameof(Menu), command.Id);
         restaurant.Update(command.Name, command.Address, command.Phone, command.Email);
 
-        await _restaurantRepository.UpdateAsync(restaurant);
+        //await _restaurantRepository.UpdateAsync(restaurant);
 
-        _unitOfWork.AddEventAfterSave(InsertOf, new[] { 1 });
+        _unitOfWork.ExecuteAfterSave(InsertOf, new[] { 1 });
 
-        await _unitOfWork.CommitAsync();
+        //await _unitOfWork.CommitAsync();
 
         return new RestaurantResponse(restaurant.Id, restaurant.Name,
             restaurant.Address, restaurant.Phone, restaurant.Email);
@@ -53,7 +53,7 @@ public class RestaurantCommandHandler :
 
     private Task InsertOf(object[] arg)
     {
-        _unitOfWork.AddEventAfterSave(InsertOfTwo, arg);
+        _unitOfWork.ExecuteAfterSave(InsertOfTwo, arg);
 
         return Task.CompletedTask;
     }

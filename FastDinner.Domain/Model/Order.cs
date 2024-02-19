@@ -2,8 +2,19 @@ using FastDinner.Domain.Contracts;
 
 namespace FastDinner.Domain.Model;
 
-public class Order : Entity, IRestaurant
+public sealed class Order : Entity, IRestaurant
 {
+    private Order()
+    {
+        
+    }
+
+    public Order(Customer customer, Table table)
+    {
+        Customer = customer;
+        Table = table;
+    }
+
     public Guid? CustomerId { get; set; }
     public Guid RestaurantId { get; set; }
     public Guid? TableId { get; set; }
@@ -11,15 +22,17 @@ public class Order : Entity, IRestaurant
     public DateTime OrderDate { get; set; }
 
 
-    public virtual Table Table { get; set; }
-    public virtual Customer Customer { get; set; }
-    public virtual Restaurant Restaurant { get; set; }
+    public Table Table { get; set; }
+    public Customer Customer { get; set; }
+    public Restaurant Restaurant { get; set; }
     public ICollection<OrderSheet> Sheets { get; set; }
 
-    public OrderSheet IncludeSheet(OrderSheet sheet)
+    public OrderSheet IncludeSheet(Product product, decimal qty, decimal unitValue)
     {
-        Sheets.Add(sheet);
+        var orderSheet = new OrderSheet(product, qty, unitValue);
 
-        return sheet;
+        Sheets.Add(orderSheet);
+
+        return orderSheet;
     }
 }

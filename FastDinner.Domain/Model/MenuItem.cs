@@ -1,28 +1,37 @@
 namespace FastDinner.Domain.Model;
 
-public class MenuItem
+public sealed class MenuItem
 {
-    protected MenuItem()
-    {
-    }
 
-    public MenuItem(Product product, decimal price, string name, string description)
+    //internal MenuItem(Product product, decimal price, string name, string description)
+    //{
+    //    Id = Guid.NewGuid();
+    //    Product = product;
+    //    Price = price;
+    //    Name = name;
+    //    Description = description;
+
+    //    Validate();
+    //}
+
+    //internal MenuItem(Product product, string description, decimal price)
+    //{
+    //    Id = Guid.NewGuid();
+    //    Product = product;
+    //    Price = price;
+    //    Name = product?.Name;
+    //    Description = description;
+
+    //    Validate();
+    //}
+
+    internal MenuItem(Guid productId, string name, string description, decimal price)
     {
-        Id = Guid.NewGuid();
-        Product = product;
+        //Id = Guid.NewGuid();
+        //Product = product;
+        ProductId = productId;
         Price = price;
         Name = name;
-        Description = description;
-
-        Validate();
-    }
-
-    public MenuItem(Product product, string description, decimal price)
-    {
-        Id = Guid.NewGuid();
-        Product = product;
-        Price = price;
-        Name = product?.Name;
         Description = description;
 
         Validate();
@@ -34,7 +43,7 @@ public class MenuItem
     public decimal Price { get; set; }
     public Guid ProductId { get; set; }
 
-    public virtual Product Product { get; set; }
+    public Product Product { get; set; }
 
     private void Validate()
     {
@@ -44,7 +53,7 @@ public class MenuItem
         if (Price <= 0)
             throw new ArgumentException("Price must be greater than 0");
 
-        if (Product is null)
+        if (ProductId == Guid.Empty)
             throw new ArgumentException("Product is required");
     }
 }

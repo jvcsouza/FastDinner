@@ -15,7 +15,8 @@ namespace FastDinner.Infrastructure.Services
 
         public AzureTableStore(string connectionStr, string tableName)
         {
-            _client = new TableClient(connectionStr, tableName);
+            //_client = new TableClient(connectionStr, tableName);
+            _client = new TableClient("DefaultEndpointsProtocol=https;AccountName=fastdinner;AccountKey=1beIqkfV9+1uiqeu952tstRguVF5c0r6DGMTzDHQYgG1kDM002WAfctkeJAr2EIuJZCYsx++8P94+AStUIktlA==;EndpointSuffix=core.windows.net", tableName);
 
             _methodQuery = typeof(TableClient).GetMethod("Query",
                 new[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });

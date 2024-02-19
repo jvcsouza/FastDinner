@@ -1,4 +1,4 @@
-using FastDinner.Application.Commands;
+using FastDinner.Application.Commands.Product;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Contracts.Product;
 using FastDinner.Domain.Model;
@@ -11,19 +11,17 @@ public class ProductCommandHandler :
     IRequestHandler<UpdateProductCommand, ProductResponse>
 {
     private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    //private readonly IUnitOfWork _unitOfWork;
 
-    public ProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public ProductCommandHandler(IProductRepository productRepository)
     {
-         _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
+        _productRepository = productRepository;
+        //_unitOfWork = unitOfWork;
     }
 
     public async Task<ProductResponse> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
         var product = await _productRepository.CreateAsync(new Product(command.Name));
-
-        await _unitOfWork.CommitAsync();
 
         return new ProductResponse(product.Id, product.Name);
     }
@@ -32,12 +30,10 @@ public class ProductCommandHandler :
     {
         var product = await _productRepository.GetByIdAsync(command.Id);
 
-        // Throw new NotFoundException(nameof(Menu), command.Id);
+        if (product is null)
+            throw new ApplicationException("Product not found with id " + command.Id);
+
         product.Update(command.Name);
-
-        await _productRepository.UpdateAsync(product);
-
-        await _unitOfWork.CommitAsync();
 
         return new ProductResponse(product.Id, product.Name);
     }

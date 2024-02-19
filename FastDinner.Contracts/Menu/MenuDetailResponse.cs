@@ -5,6 +5,7 @@ public record MenuDetailResponse(
     string Name,
     string Description,
     string Image,
+    bool Main,
     IEnumerable<CategoryMenuResponse> Categories
 );
 

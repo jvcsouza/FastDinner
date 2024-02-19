@@ -1,12 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace FastDinner.Domain.Model;
 
-public class MenuCategory
+public sealed class MenuCategory
 {
+    private MenuCategory() { }
+
     public MenuCategory(string name, string description)
     {
-        Id = Guid.NewGuid();
+        //Id = Guid.NewGuid();
 
         Update(name, description);
+
+        MenuItems = new List<MenuItem>();
     }
 
     public Guid Id { get; set; }
@@ -14,7 +20,7 @@ public class MenuCategory
     public string Description { get; set; }
     public Guid MenuId { get; set; }
 
-    public virtual Menu Menu { get; set; }
+    public Menu Menu { get; set; }
     public ICollection<MenuItem> MenuItems { get; set; }
 
     public void Update(string name, string description)

@@ -36,7 +36,7 @@ public sealed class Restaurant : Entity
 
     public Menu IncludeMenu(string name, string description, string image)
     {
-        var menu = new Menu(name, description, image);
+        var menu = new Menu(name, description, image, false);
 
         Menus.Add(menu);
 

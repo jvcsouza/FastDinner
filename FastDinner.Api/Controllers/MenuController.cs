@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FastDinner.Application.Commands.Menu;
+using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Menu;
 using MediatR;
@@ -13,17 +14,25 @@ namespace FastDinner.Api.Controllers
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class MenuController : ApiController
     {
-        private readonly ISender _mediator;
-
-        public MenuController(ISender mediator)
-        {
-            _mediator = mediator;
-        }
+        public MenuController(ISender mediator, IUnitOfWork unitOfWork) 
+            : base(mediator, unitOfWork) { }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var menus = await _mediator.Send<IEnumerable<MenuResponse>>(new MenuQuery());
+            var menus = await SendQueryAsync<IEnumerable<MenuResponse>>(new MenuQuery());
+
+            return Ok(menus);
+        }
+
+        [HttpGet("{menuId:guid}")]
+        public async Task<IActionResult> Get(Guid menuId)
+        {
+            // TODO: investigar o porquê desse código não funcionar, appscope do DbContext nulo
+            //var menuRepository = DependencyResolver.Get<IMenuRepository>();
+            //var menu = await menuRepository.GetByIdAsync(menuId);
+
+            var menus = await SendQueryAsync<MenuDetailResponse>(new MenuQueryById(menuId));
 
             return Ok(menus);
         }
@@ -31,7 +40,7 @@ namespace FastDinner.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateMenuRequest request)
         {
-            var menu = await _mediator.Send<MenuResponse>(new CreateMenuCommand(
+            var menu = await SendCommandAsync(new CreateMenuCommand(
                 request.Name,
                 request.Description,
                 request.Image
@@ -40,13 +49,13 @@ namespace FastDinner.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = menu.Id }, menu);
         }
 
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] UpdateMenuRequest request)
+        [HttpPut("{menuId:guid}")]
+        public async Task<IActionResult> Put(Guid menuId, [FromBody] UpdateMenuRequest request)
         {
-            if (id != request.Id)
+            if (menuId != request.Id)
                 return BadRequest();
 
-            var menu = await _mediator.Send<MenuResponse>(new UpdateMenuCommand(
+            var menu = await SendCommandAsync(new UpdateMenuCommand(
                 request.Id,
                 request.Name,
                 request.Description,
@@ -62,7 +71,7 @@ namespace FastDinner.Api.Controllers
             if (menuId != request.MenuId)
                 return BadRequest();
 
-            var menu = await _mediator.Send<MenuDetailResponse>(new AddCategoryToMenuCommand(
+            var menu = await SendCommandAsync(new AddCategoryToMenuCommand(
                 request.MenuId,
                 request.Name,
                 request.Description
@@ -77,7 +86,7 @@ namespace FastDinner.Api.Controllers
             if (menuId == Guid.NewGuid())
                 return BadRequest();
 
-            var menuCategories = await _mediator.Send<IEnumerable<MenuCategoriesResponse>>(new MenuCategoriesQuery(menuId));
+            var menuCategories = await SendQueryAsync<IEnumerable<MenuCategoriesResponse>>(new MenuCategoriesQuery(menuId));
 
             return Ok(menuCategories);
         }
@@ -91,11 +100,10 @@ namespace FastDinner.Api.Controllers
             if (categoryId != request.CategoryId)
                 return BadRequest();
 
-            var menu = await _mediator.Send<MenuDetailResponse>(new AddMenuItemToCategoryCommand(
+            var menu = await SendCommandAsync(new AddMenuItemToCategoryCommand(
                 request.MenuId,
                 request.CategoryId,
                 request.ProductId,
-                request.ProductName,
                 request.ProductDescription,
                 request.Price
             ));

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using FastDinner.Application.Commands;
+using FastDinner.Application.Commands.Product;
+using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Product;
 using MediatR;
@@ -13,17 +14,21 @@ namespace FastDinner.Api.Controllers
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class ProductController : ApiController
     {
-        private readonly ISender _mediator;
-
-        public ProductController(ISender mediator)
-        {
-            _mediator = mediator;
-        }
+        public ProductController(ISender mediator, IUnitOfWork unitOfWork) 
+            : base(mediator, unitOfWork) { }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var products = await _mediator.Send<IEnumerable<ProductResponse>>(new ProductQuery());
+            var products = await SendCommandAsync<IEnumerable<ProductResponse>>(new ProductQuery());
+
+            return Ok(products);
+        }
+
+        [HttpGet("{productId:guid}")]
+        public async Task<IActionResult> Get(Guid productId)
+        {
+            var products = await SendCommandAsync<ProductResponse>(new ProductQueryById(productId));
 
             return Ok(products);
         }
@@ -31,7 +36,7 @@ namespace FastDinner.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductRequest request)
         {
-            var product = await _mediator.Send<ProductResponse>(new CreateProductCommand(request.Name));
+            var product = await SendCommandAsync(new CreateProductCommand(request.Name));
 
             return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
         }
@@ -42,7 +47,7 @@ namespace FastDinner.Api.Controllers
             if (id != request.Id)
                 return BadRequest();
 
-            var product = await _mediator.Send<ProductResponse>(new UpdateProductCommand(
+            var product = await SendCommandAsync(new UpdateProductCommand(
                 request.Id,
                 request.Name
             ));

@@ -1,9 +1,9 @@
 using FastDinner.Contracts.Product;
 using MediatR;
 
-namespace FastDinner.Application.Commands;
+namespace FastDinner.Application.Commands.Product;
 
-public record UpdateProductCommand (
+public record UpdateProductCommand(
     Guid Id,
     string Name
 ) : IRequest<ProductResponse>;

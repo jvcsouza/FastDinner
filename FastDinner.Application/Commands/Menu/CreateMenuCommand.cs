@@ -6,5 +6,5 @@ namespace FastDinner.Application.Commands.Menu;
 public record CreateMenuCommand (
     string Name,
     string Description,
-    byte[] Image
+    string Image
 ) : IRequest<MenuResponse>;

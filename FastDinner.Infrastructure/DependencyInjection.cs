@@ -19,7 +19,7 @@ namespace FastDinner.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, Microsoft.Extensions.Configuration.ConfigurationManager configuration)
         {
             return services
                 .AddConfigurations(configuration)
@@ -39,9 +39,14 @@ namespace FastDinner.Infrastructure
             {
                 var config = configuration.GetSection(TableConfig.SectionName).Get<TableConfig>();
                 var cache = provider.GetService<ICacheProvider>();
-                var appSettings = new AppSettings(new AzureTableStore(Environment.GetEnvironmentVariable("TABLECONFIGSTR"), config.TableName), cache);
-                return appSettings;
+                var repository = provider.GetService<Lazy<IRestaurantRepository>>();
+                var stringConnection = Environment.GetEnvironmentVariable("TABLECONFIGSTR");
+                var tableStore = new AzureTableStore(stringConnection, config.TableName);
 
+                tableStore.CreateIfNotExistsAsync()
+                    .RunSynchronously();
+
+                return new AppSettings(tableStore, cache, repository);
             });
 
             return services;
@@ -61,9 +66,22 @@ namespace FastDinner.Infrastructure
             //services.AddDbContext<DinnerContext>((IServiceProvider provider, DbContextOptionsBuilder options)
             //    => options.UseSqlServer(provider.GetService<IOptions<DatabaseConfig>>().Value.ConnectionString));
 
-            services.AddDbContext<DinnerContext>(options
+            var alreadyExecute = false;
+
+            services.AddDbContext<DinnerContext>((IServiceProvider provider, DbContextOptionsBuilder options)
                 =>
             {
+#if LOCAL
+                var connString = new SqlConnectionStringBuilder
+                {
+                    DataSource = "(local)\\sqlexpress",
+                    InitialCatalog = "FastDinner",
+                    UserID = "sa",
+                    Password = "s@",
+                    MultipleActiveResultSets = true,
+                    ConnectTimeout = 60
+                };
+#else
                 var settings = AppScope.Tenant;
 
                 var passBytes = Convert.FromBase64String(
@@ -78,8 +96,22 @@ namespace FastDinner.Infrastructure
                     MultipleActiveResultSets = true,
                     ConnectTimeout = 60
                 };
-
+#endif
                 options.UseSqlServer(connString.ConnectionString);
+
+                //if (!alreadyExecute)
+                //{
+                //    alreadyExecute = true;
+                //    //var context = provider.GetService<DinnerContext>();
+
+                //    var context = new DinnerContext((DbContextOptions<DinnerContext>)options.Options, new AppScope());
+
+                //    context.Database.Migrate();
+
+                //    //options.mi
+
+                //    //return context;
+                //}
             });
 
             //var serviceProvider = services.BuildServiceProvider();
@@ -91,9 +123,9 @@ namespace FastDinner.Infrastructure
             services.AddScoped<IRestaurantRepository, RestaurantRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-            services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
             services.AddScoped<IReservationRepository, ReservationRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             return services;
         }
