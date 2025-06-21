@@ -20,7 +20,7 @@ namespace FastDinner.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var products = await SendCommandAsync<IEnumerable<ProductResponse>>(new ProductQuery());
+            var products = await SendQueryAsync<IEnumerable<ProductResponse>>(new ProductQuery());
 
             return Ok(products);
         }
@@ -28,7 +28,7 @@ namespace FastDinner.Api.Controllers
         [HttpGet("{productId:guid}")]
         public async Task<IActionResult> Get(Guid productId)
         {
-            var products = await SendCommandAsync<ProductResponse>(new ProductQueryById(productId));
+            var products = await SendQueryAsync<ProductResponse>(new ProductQueryById(productId));
 
             return Ok(products);
         }
