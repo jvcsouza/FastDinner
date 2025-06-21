@@ -24,7 +24,7 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task ExecuteTransaction(Action action)
     {
-        await ExecuteTransaction(() => new Task(action));
+        await ExecuteTransaction(() => Task.Run(action));
     }
 
     public async Task ExecuteTransaction(Func<Task> task)
