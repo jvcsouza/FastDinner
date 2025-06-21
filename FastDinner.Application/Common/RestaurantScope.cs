@@ -18,7 +18,7 @@
 
     public class RestaurantSettings
     {
-        public Guid ResturantId { get; set; }
+        public Guid RestaurantId { get; set; }
         public string Name { get; set; }
     }
 }

@@ -38,7 +38,7 @@ public class MenuCommandHandler :
 
     public async Task<MenuResponse> Handle(CreateMenuCommand command, CancellationToken cancellationToken)
     {
-        var restaurantId = AppScope.Restaurant.ResturantId;
+        var restaurantId = AppScope.Restaurant.RestaurantId;
 
         var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
 

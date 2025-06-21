@@ -80,7 +80,7 @@ public class DinnerContext : DbContext
         foreach (var property in ChangeTracker.Entries<IRestaurant>()
                      .Where(w => w.State == EntityState.Added && w.Entity.RestaurantId == default))
         {
-            property.Entity.RestaurantId = AppScope.Restaurant.ResturantId;
+            property.Entity.RestaurantId = AppScope.Restaurant.RestaurantId;
 
             cancellationToken.ThrowIfCancellationRequested();
         }
