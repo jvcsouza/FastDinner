@@ -20,18 +20,18 @@ namespace FastDinner.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var products = await SendQueryAsync<IEnumerable<TableResponse>>(new TableQuery());
+            var tables = await SendQueryAsync<IEnumerable<TableResponse>>(new TableQuery());
 
-            return Ok(products);
+            return Ok(tables);
         }
 
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var products = await SendQueryAsync<IEnumerable<TableResponse>>(new TableQuery());
+            var table = await SendQueryAsync<TableResponse>(new TableQueryById(id));
 
-            return Ok(products);
+            return Ok(table);
         }
 
         [HttpPost]
