@@ -6,3 +6,8 @@ public interface ICacheProvider
     Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> createItem, TimeSpan? expiration = null);
     void RemoveBase(string baseKey);
 }
+
+public static class CacheKeys
+{
+    
+}

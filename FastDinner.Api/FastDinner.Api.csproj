@@ -1,24 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>disable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <NoWarn>VSTHRD200</NoWarn>
-    <UserSecretsId>72494e9b-7e5c-4355-8948-1865fc71ab71</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
-    <Configurations>Debug;Release;Local</Configurations>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="MediatR" Version="10.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FastDinner.Application\FastDinner.Application.csproj" />
-    <ProjectReference Include="..\FastDinner.Infrastructure\FastDinner.Infrastructure.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<NoWarn>VSTHRD200</NoWarn>
+		<UserSecretsId>72494e9b-7e5c-4355-8948-1865fc71ab71</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+		<Configurations>Debug;Release;Local</Configurations>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+		<PackageReference Include="MediatR" Version="10.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FastDinner.Application\FastDinner.Application.csproj" />
+		<ProjectReference Include="..\FastDinner.Infrastructure\FastDinner.Infrastructure.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Services\" />
+	</ItemGroup>
+	<ItemGroup>
+		<FilesToCopy Include="C:/PROJECTS/frontfastdinner/dist/frontfastdinner/browser/*.*" />
+	</ItemGroup>
+	<Target Name="BuildAngular" BeforeTargets="Build">
+		<!-- Copia os arquivos do dist do Angular para a pasta wwwroot -->
+		<MakeDir Directories="wwwroot" />
+		<Copy SourceFiles="$(FilesToCopy)" DestinationFolder="wwwroot" />
+	</Target>
 </Project>

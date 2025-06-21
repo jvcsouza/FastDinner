@@ -8,12 +8,12 @@ namespace FastDinner.Application.Common
 
         public static void CreateScope(TenantSettings context)
         {
-            CallContext<TenantSettings>.SetData(TenantKey, context);
+            RequestContext<TenantSettings>.SetData(TenantKey, context);
         }
 
         public static TenantSettings GetTenantScope()
         {
-            return CallContext<TenantSettings>.GetData(TenantKey);
+            return RequestContext<TenantSettings>.GetData(TenantKey);
         }
     }
 

@@ -14,12 +14,13 @@ using System.Text;
 using FastDinner.Infrastructure.Store;
 using Microsoft.Data.SqlClient;
 using FastDinner.Application.Common;
+using Microsoft.VisualStudio.Threading;
 
 namespace FastDinner.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, Microsoft.Extensions.Configuration.ConfigurationManager configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
         {
             return services
                 .AddConfigurations(configuration)
@@ -43,8 +44,10 @@ namespace FastDinner.Infrastructure
                 var stringConnection = Environment.GetEnvironmentVariable("TABLECONFIGSTR");
                 var tableStore = new AzureTableStore(stringConnection, config.TableName);
 
-                tableStore.CreateIfNotExistsAsync()
-                    .RunSynchronously();
+                new JoinableTaskFactory(new JoinableTaskContext())
+                    .Run(tableStore.CreateIfNotExistsAsync);
+
+                // .GetAwaiter().GetResult();
 
                 return new AppSettings(tableStore, cache, repository);
             });
@@ -66,18 +69,18 @@ namespace FastDinner.Infrastructure
             //services.AddDbContext<DinnerContext>((IServiceProvider provider, DbContextOptionsBuilder options)
             //    => options.UseSqlServer(provider.GetService<IOptions<DatabaseConfig>>().Value.ConnectionString));
 
-            var alreadyExecute = false;
+            // var alreadyExecute = false;
 
-            services.AddDbContext<DinnerContext>((IServiceProvider provider, DbContextOptionsBuilder options)
+            services.AddDbContext<DinnerContext>((provider, options)
                 =>
             {
-#if LOCAL
+#if !LOCAL
                 var connString = new SqlConnectionStringBuilder
                 {
-                    DataSource = "(local)\\sqlexpress",
+                    DataSource = "appservers.database.windows.net", //"(local)\\sqlexpress",
                     InitialCatalog = "FastDinner",
-                    UserID = "sa",
-                    Password = "s@",
+                    UserID = "appservers", //"sa",
+                    Password = Encoding.UTF8.GetString(Convert.FromBase64String("bSQhbmFtXnQ3K1I7ckwj")), //"s@",
                     MultipleActiveResultSets = true,
                     ConnectTimeout = 60
                 };

@@ -6,12 +6,12 @@
 
         public static void CreateScope(RestaurantSettings context)
         {
-            CallContext<RestaurantSettings>.SetData(TenantKey, context);
+            RequestContext<RestaurantSettings>.SetData(TenantKey, context);
         }
 
         public static RestaurantSettings GetRestaurantScope()
         {
-            return CallContext<RestaurantSettings>.GetData(TenantKey);
+            return RequestContext<RestaurantSettings>.GetData(TenantKey);
         }
     }
 

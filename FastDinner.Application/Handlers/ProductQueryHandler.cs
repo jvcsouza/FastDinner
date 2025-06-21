@@ -1,4 +1,3 @@
-using FastDinner.Application.Common.Interfaces;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Product;

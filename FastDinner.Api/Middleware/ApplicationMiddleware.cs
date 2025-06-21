@@ -19,6 +19,12 @@ public class ApplicationMiddleware
 
     public async Task InvokeAsync(HttpContext context, IAppSettings appSettings)
     {
+        if (context.Request.Path is { Value: not null, HasValue: true } && !context.Request.Path.Value.Contains("/api"))
+        {
+            await _next(context);
+            return;
+        }
+
         BaseContext.UseContext(context);
         await CreateApplicationScope(context, appSettings);
         await _next(context);

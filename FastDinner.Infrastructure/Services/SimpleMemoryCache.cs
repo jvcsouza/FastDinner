@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.Threading;
 
 namespace FastDinner.Infrastructure.Services;
 
+// Provide JoinableTaskFactory where allowed
+#pragma warning disable VSTHRD012 
 public class SimpleMemoryCache : ICacheProvider
 {
     private readonly AsyncReaderWriterLock _lock = new();
@@ -30,52 +32,40 @@ public class SimpleMemoryCache : ICacheProvider
 
     public T GetOrAdd<T>(string key, Func<T> createItem, TimeSpan? expiration)
     {
-        T cacheEntry;
-        if (!Cache.Contains(key))
+        if (Cache.Contains(key))
+            return (T)Cache.Get(key);
+
+        lock (LockSimpleCache)
         {
-            lock (LockSimpleCache)
-            {
-                if (!Cache.Contains(key))
-                {
-                    // Key not in cache, so get data.
-                    cacheEntry = createItem();
+            if (Cache.Contains(key))
+                return (T)Cache.Get(key);
 
-                    if (cacheEntry != null)
-                    {
-                        Cache.Add(key, cacheEntry, GetPolicy(expiration));
-                    }
-                    return cacheEntry;
-                }
-            }
+            var cacheEntry = createItem();
+
+            if (cacheEntry != null)
+                Cache.Add(key, cacheEntry, GetPolicy(expiration));
+
+            return cacheEntry;
         }
-
-        cacheEntry = (T)Cache.Get(key);
-        return cacheEntry;
     }
 
     public async Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> createItem, TimeSpan? expiration)
     {
-        T cacheEntry;
-        if (!Cache.Contains(key))
+        if (Cache.Contains(key))
+            return (T)Cache.Get(key);
+
+        await using (await _lock.WriteLockAsync())
         {
-            await using (await _lock.WriteLockAsync())
-            {
-                if (!Cache.Contains(key))
-                {
-                    // Key not in cache, so get data.
-                    cacheEntry = await createItem();
+            if (Cache.Contains(key))
+                return (T)Cache.Get(key);
 
-                    if (cacheEntry != null)
-                    {
-                        Cache.Add(key, cacheEntry, GetPolicy(expiration));
-                    }
-                    return cacheEntry;
-                }
-            }
+            var cacheEntry = await createItem();
+
+            if (cacheEntry != null)
+                Cache.Add(key, cacheEntry, GetPolicy(expiration));
+
+            return cacheEntry;
         }
-
-        cacheEntry = (T)Cache.Get(key);
-        return cacheEntry;
     }
 
     public void RemoveBase(string baseKey)
@@ -83,16 +73,16 @@ public class SimpleMemoryCache : ICacheProvider
         var cacheKeys = Cache.Select(kvp => kvp.Key).Where(w => w.Contains(baseKey)).ToList();
 
         if (cacheKeys.Count <= 0) return;
-        
+
         lock (LockSimpleCache)
         {
-            cacheKeys.ForEach(key =>
+            foreach (var key in cacheKeys)
             {
                 if (Cache.Contains(key))
                 {
                     Cache.Remove(key);
                 }
-            });
+            }
         }
 
     }

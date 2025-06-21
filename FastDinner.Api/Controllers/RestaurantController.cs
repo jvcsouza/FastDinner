@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using FastDinner.Application.Commands;
 using FastDinner.Application.Commands.Restaurant;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Restaurant;

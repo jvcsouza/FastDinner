@@ -1,5 +1,4 @@
 ﻿using FastDinner.Application.Common.Interfaces.Repositories;
-using FastDinner.Infrastructure.Persistence;
 using MediatR;
 
 namespace FastDinner.Api.Controllers

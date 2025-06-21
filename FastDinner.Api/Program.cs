@@ -6,6 +6,7 @@ using FastDinner.Api.Middleware;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using FastDinner.Infrastructure.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,13 +44,19 @@ var app = builder.Build();
     app.UseMiddleware<ApplicationMiddleware>();
     app.UseMiddleware<AuthenticationMiddleware>();
     app.UseWelcomePage("/");
+    //app.UseWelcomePage("/wwwroot/browser");
 
     app.UseHttpsRedirection();
 
     app.UseAuthentication();
     app.UseAuthorization();
 
+    //app.UseDefaultFiles();
+    //app.UseStaticFiles();
+
     app.MapControllers();
+
+    //app.MapFallbackToFile("index.html");
 
     //DependencyResolver.InitializeIoc(app.Services);
 

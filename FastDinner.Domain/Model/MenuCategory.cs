@@ -1,14 +1,10 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FastDinner.Domain.Model;
 
 public sealed class MenuCategory
 {
-    private MenuCategory() { }
-
     public MenuCategory(string name, string description)
     {
-        //Id = Guid.NewGuid();
+        Id = Guid.NewGuid();
 
         Update(name, description);
 

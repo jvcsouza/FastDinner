@@ -4,6 +4,7 @@ using FastDinner.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FastDinner.Infrastructure.Migrations
 {
     [DbContext(typeof(DinnerContext))]
-    partial class DinnerContextModelSnapshot : ModelSnapshot
+    [Migration("20241021025541_AddedStatusOrderToSheet")]
+    partial class AddedStatusOrderToSheet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

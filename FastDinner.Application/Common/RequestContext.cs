@@ -25,13 +25,13 @@ namespace FastDinner.Application.Common
         public static object GetDataInternal(string name) => _context?.Items[name];
     }
 
-    public class CallContext<T> : BaseContext
+    public class RequestContext<T> : BaseContext
     {
         public static void SetData(string name, T data) => SetDataInternal(name, data);
         public static T GetData(string name) => (T)GetDataInternal(name);
     }
 
-    //public static class CallContext<T>
+    //public static class RequestContext<T>
     //{
     //    private static readonly ConcurrentDictionary<string, AsyncLocal<T>> State = new();
 
@@ -42,7 +42,7 @@ namespace FastDinner.Application.Common
     //        State.TryGetValue(name, out var data) ? data.Value : default;
     //}
 
-    //public static class CallContext<T>
+    //public static class RequestContext<T>
     //{
     //    private static readonly ConcurrentDictionary<string, ThreadLocal<T>> State = new();
 

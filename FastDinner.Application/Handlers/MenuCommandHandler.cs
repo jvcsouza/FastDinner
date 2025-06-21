@@ -1,7 +1,6 @@
 using FastDinner.Application.Commands.Menu;
 using FastDinner.Application.Common;
 using FastDinner.Application.Common.Interfaces.Repositories;
-using FastDinner.Application.Common.Interfaces.Services;
 using FastDinner.Contracts.Menu;
 using FastDinner.Domain.Model;
 using MediatR;
@@ -61,7 +60,7 @@ public class MenuCommandHandler :
     {
         var menu = await GetMenuAsync(command.Id);
 
-        // Throw new NotFoundException(nameof(Menu), command.Id);
+        //throw new NotFoundException(nameof(Menu), command.Id);
 
         var urlImage = command.Image.ToString();
 

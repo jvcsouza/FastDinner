@@ -1,6 +1,7 @@
 using FastDinner.Application.Commands.Product;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Contracts.Product;
+using FastDinner.Domain;
 using FastDinner.Domain.Model;
 using MediatR;
 
@@ -21,7 +22,7 @@ public class ProductCommandHandler :
 
     public async Task<ProductResponse> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await _productRepository.CreateAsync(new Product(command.Name));
+        var product = await _productRepository.CreateAsync(new Product(command.Name, ProductType.Food, false));
 
         return new ProductResponse(product.Id, product.Name);
     }

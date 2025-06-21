@@ -4,10 +4,7 @@ namespace FastDinner.Domain.Model;
 
 public sealed class Order : Entity, IRestaurant
 {
-    private Order()
-    {
-        
-    }
+    private Order() { }
 
     public Order(Customer customer, Table table)
     {
@@ -32,6 +29,8 @@ public sealed class Order : Entity, IRestaurant
         var orderSheet = new OrderSheet(product, qty, unitValue);
 
         Sheets.Add(orderSheet);
+
+        Price += orderSheet.Amount;
 
         return orderSheet;
     }

@@ -1,9 +1,7 @@
 using System.Collections;
 using FastDinner.Application.Common.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic.CompilerServices;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
 namespace FastDinner.Infrastructure.Persistence.Repositories;
 
@@ -36,18 +34,18 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
     {
         var modifyEntity = Context.Set<T>().Update(entity).Entity;
 
-        var EnumerableType = typeof(IEnumerable);
+        var enumerableType = typeof(IEnumerable);
         var collectionType = typeof(ICollection);
-        var StringType = typeof(string);
+        var stringType = typeof(string);
         var byteType = typeof(byte[]);
-        var NotMapped = typeof(NotMappedAttribute);
+        var notMapped = typeof(NotMappedAttribute);
 
         var methodSet = Context.GetType()
             .GetMethod(nameof(Context.Set), new Type[] { });
 
         entity.GetType().GetProperties()
-            .Where(p => (EnumerableType.IsAssignableFrom(p.PropertyType) || collectionType.IsAssignableFrom(p.PropertyType)) && !StringType.IsAssignableFrom(p.PropertyType) && !byteType.IsAssignableFrom(p.PropertyType)
-                        && !p.CustomAttributes.Any(a => Attribute.IsDefined(p, NotMapped))).ToList()
+            .Where(p => (enumerableType.IsAssignableFrom(p.PropertyType) || collectionType.IsAssignableFrom(p.PropertyType)) && !stringType.IsAssignableFrom(p.PropertyType) && !byteType.IsAssignableFrom(p.PropertyType)
+                        && !p.CustomAttributes.Any(_ => Attribute.IsDefined(p, notMapped))).ToList()
             .ForEach(p =>
             {
                 Console.WriteLine(p.Name);
@@ -59,7 +57,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : class
                 var setResult = ((dynamic)methodSet!.MakeGenericMethod(p.PropertyType.GetGenericArguments().First())
                         .Invoke(Context, new object[] { }));
 
-                foreach (var it in itens)
+                foreach (var it in itens ?? new List<object>())
                     Console.WriteLine(it.Name + ": " + Context.Entry(it).State);
 
                 setResult!.AttachRange(itens);

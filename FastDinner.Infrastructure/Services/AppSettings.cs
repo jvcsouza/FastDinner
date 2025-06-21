@@ -61,7 +61,7 @@ namespace FastDinner.Infrastructure.Services
                 }
             });
 
-            return (tenantSettings, restaurantSettings); ;
+            return (tenantSettings, restaurantSettings);
         }
     }
 }

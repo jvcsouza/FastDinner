@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 
 namespace FastDinner.Infrastructure.Persistence;
@@ -43,13 +42,30 @@ public class DinnerContext : DbContext
             .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
 
         modelBuilder.Entity<Order>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId)
+            .HasOne(x => x.Table);
+
+        modelBuilder.Entity<Order>()
+            .HasMany(x => x.Sheets)
+            .WithOne(x => x.Order)
+            .HasForeignKey(x => x.OrderId);
+
+        modelBuilder.Entity<OrderSheet>()
+            .HasKey(x => x.Id);
+
+        modelBuilder.Entity<Order>()
+            .HasOne(x => x.Customer);
 
         modelBuilder.Entity<Reservation>()
             .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
 
         modelBuilder.Entity<Table>()
             .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+
+        modelBuilder.Entity<Customer>()
+            .Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -109,15 +125,15 @@ public class DinnerContext : DbContext
             return Enumerable.Empty<KeyValuePair<string, Type>>();
         }
 
-        var EnumerableType = typeof(IEnumerable);
-        var StringType = typeof(string);
-        var NotMapped = typeof(NotMappedAttribute);
+        var enumerableType = typeof(IEnumerable);
+        var stringType = typeof(string);
+        var notMapped = typeof(NotMappedAttribute);
 
         ICollection<KeyValuePair<string, Type>> dependents = new List<KeyValuePair<string, Type>>();
 
         entity.GetType().GetProperties()
-            .Where(p => EnumerableType.IsAssignableFrom(p.PropertyType) && !StringType.IsAssignableFrom(p.PropertyType) &&
-                        !p.CustomAttributes.Any(a => Attribute.IsDefined(p, NotMapped)) && !p.GetGetMethod().IsVirtual).ToList()
+            .Where(p => enumerableType.IsAssignableFrom(p.PropertyType) && !stringType.IsAssignableFrom(p.PropertyType) &&
+                        !p.CustomAttributes.Any(_ => Attribute.IsDefined(p, notMapped)) && !p.GetGetMethod().IsVirtual).ToList()
             .ForEach(p =>
             {
                 if (p.PropertyType.GetGenericArguments().Any())

@@ -15,9 +15,11 @@ namespace FastDinner.Infrastructure.Services
 
         public AzureTableStore(string connectionStr, string tableName)
         {
-            //_client = new TableClient(connectionStr, tableName);
+#if DEBUG
             _client = new TableClient("DefaultEndpointsProtocol=https;AccountName=fastdinner;AccountKey=1beIqkfV9+1uiqeu952tstRguVF5c0r6DGMTzDHQYgG1kDM002WAfctkeJAr2EIuJZCYsx++8P94+AStUIktlA==;EndpointSuffix=core.windows.net", tableName);
-
+#else
+            _client = new TableClient(connectionStr, tableName);
+#endif
             _methodQuery = typeof(TableClient).GetMethod("Query",
                 new[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });
 
@@ -42,7 +44,7 @@ namespace FastDinner.Infrastructure.Services
             var lst = new List<T>();
 
             if (request == null) return Task.FromResult(lst);
-            
+
             foreach (var i in request)
             {
                 lst.Add(JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject((object)i)));
