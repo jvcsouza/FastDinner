@@ -20,7 +20,7 @@ Content-Type: application/json
 ### @name Listagem de menus
 GET {{url}}
 Content-Type: application/json
-X-Resturant-ID: C5987995-42DC-4512-8281-D29E82686D88
+X-Restaurant-ID: C5987995-42DC-4512-8281-D29E82686D88
 
 ### Adicionar uma categoria ao menu
 POST {{url}}/{{id}}/category

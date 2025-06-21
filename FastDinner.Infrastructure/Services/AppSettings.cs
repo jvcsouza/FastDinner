@@ -55,7 +55,7 @@ namespace FastDinner.Infrastructure.Services
 
                     default:
                         {
-                            var resScope = new RestaurantSettings { Name = restaurant.Name, ResturantId = restaurant.Id };
+                            var resScope = new RestaurantSettings { Name = restaurant.Name, RestaurantId = restaurant.Id };
                             return resScope;
                         }
                 }
