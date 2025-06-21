@@ -1,15 +1,20 @@
 using FastDinner.Application.Common.Interfaces.Repositories;
+using FastDinner.Application.Common;
+using FastDinner.Domain.Model;
+using System.Linq;
 
 namespace FastDinner.Infrastructure.Persistence;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly DinnerContext _context;
+    private readonly IDomainEventDispatcher _dispatcher;
     private readonly Queue<Event> _events = new();
 
-    public UnitOfWork(DinnerContext context)
+    public UnitOfWork(DinnerContext context, IDomainEventDispatcher dispatcher)
     {
         _context = context;
+        _dispatcher = dispatcher;
     }
 
     public void ExecuteAfterSave(Func<object[], Task> func, params object[] args)
@@ -62,20 +67,42 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task<int> CommitAsync()
     {
-        if (!_events.Any()) return await _context.SaveChangesAsync();
+        var result = await _context.SaveChangesAsync();
 
-        var actualEvents = new Queue<Event>(_events);
-        
-        _events.Clear();
+        var domainEntities = _context.ChangeTracker
+            .Entries<Entity>()
+            .Select(e => e.Entity)
+            .Where(e => e.DomainEvents.Any())
+            .ToList();
 
-        await _context.SaveChangesAsync();
+        var domainEvents = domainEntities
+            .SelectMany(e => e.DomainEvents)
+            .ToList();
 
-        while (actualEvents.TryDequeue(out var @event))
+        foreach (var entity in domainEntities)
         {
-            await @event.ActionOb(@event.Parameters);
+            entity.ClearDomainEvents();
         }
 
-        return await CommitAsync();
+        if (domainEvents.Any())
+        {
+            await _dispatcher.DispatchAsync(domainEvents);
+        }
+
+        if (_events.Any())
+        {
+            var actualEvents = new Queue<Event>(_events);
+            _events.Clear();
+
+            while (actualEvents.TryDequeue(out var @event))
+            {
+                await @event.ActionOb(@event.Parameters);
+            }
+
+            return await CommitAsync();
+        }
+
+        return result;
     }
 
     // public async Task RollbackAsync()

@@ -34,6 +34,7 @@ namespace FastDinner.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddSingleton<ITokenGenerator, JwtTokenGenerator>();
             services.AddSingleton<ICacheProvider, SimpleMemoryCache>();
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<AppScope>();
 
             services.AddSingleton<IAppSettings>(provider =>
