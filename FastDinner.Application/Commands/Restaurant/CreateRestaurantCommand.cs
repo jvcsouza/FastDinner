@@ -1,3 +1,4 @@
+using FastDinner.Application.Common.Interfaces;
 using FastDinner.Contracts.Restaurant;
 using MediatR;
 
@@ -8,4 +9,4 @@ public record CreateRestaurantCommand(
     string Address,
     string Phone,
     string Email
-) : IRequest<RestaurantResponse>;
+) : ICommand<RestaurantResponse>;

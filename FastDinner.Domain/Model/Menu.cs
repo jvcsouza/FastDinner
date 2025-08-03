@@ -54,6 +54,24 @@ public class Menu : Entity, IRestaurant
         return menuCategory;
     }
 
+    public void AddProduct(Guid productId, string productName, Guid categoryId, string description, decimal price)
+    {
+        if (productId == Guid.Empty)
+            throw new ArgumentException("Product ID is required");
+
+        if (categoryId == Guid.Empty)
+            throw new ArgumentException("Category ID is required");
+
+        var categoryToInclude = Categories.FirstOrDefault(x => x.Id == categoryId);
+
+        if (categoryToInclude is null)
+            throw new ApplicationException($"Category with id {categoryId} not found");
+
+        var menuItem = new MenuItem(productId, productName, description, price);
+
+        categoryToInclude.AddItem(menuItem);
+    }
+
     public void AddProduct(Product product, MenuCategory category, string description, decimal price)
     {
         if (product is null)

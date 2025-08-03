@@ -14,7 +14,8 @@ namespace FastDinner.Api.Controllers
 {
     public class EnumController : ApiController
     {
-        public EnumController(ISender mediator, IUnitOfWork unitOfWork) : base(mediator, unitOfWork)
+        public EnumController(ISender mediator) 
+            : base(mediator)
         {
 
         }

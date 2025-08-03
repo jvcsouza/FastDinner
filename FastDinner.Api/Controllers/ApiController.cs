@@ -11,17 +11,15 @@ namespace FastDinner.Api.Controllers
     public class ApiController : ControllerBase
     {
         private readonly ISender _mediator;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public ApiController(ISender mediator, IUnitOfWork unitOfWork)
+        public ApiController(ISender mediator)
         {
-            _unitOfWork = unitOfWork;
             _mediator = mediator;
         }
 
         protected async Task<T> SendCommandAsync<T>(IRequest<T> command)
         {
-            return await _unitOfWork.ExecuteTransaction(async () => await _mediator.Send(command));
+            return await _mediator.Send(command);
         }
 
         protected async Task<T> SendQueryAsync<T>(IRequest<T> query)

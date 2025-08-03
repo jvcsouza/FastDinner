@@ -1,5 +1,4 @@
 ﻿using FastDinner.Application.Commands.Table;
-using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Table;
 using MediatR;
@@ -14,8 +13,8 @@ namespace FastDinner.Api.Controllers
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class TableController : ApiController
     {
-        public TableController(ISender mediator, IUnitOfWork unitOfWork) 
-            : base(mediator, unitOfWork) { }
+        public TableController(ISender mediator)
+            : base(mediator) { }
 
         [HttpGet]
         public async Task<IActionResult> Get()

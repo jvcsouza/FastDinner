@@ -18,16 +18,16 @@ public class MenuCommandHandler :
     // private readonly IMapper _mapper;
     private readonly IMenuRepository _menuRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    //private readonly IUnitOfWork _unitOfWork;
     private readonly IRestaurantRepository _restaurantRepository;
 
     public MenuCommandHandler(IMenuRepository menuRepository, IProductRepository productRepository,
-        IRestaurantRepository restaurantRepository, IUnitOfWork unitOfWork)
+        IRestaurantRepository restaurantRepository)
     {
         _menuRepository = menuRepository;
         _restaurantRepository = restaurantRepository;
         _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
+        //_unitOfWork = unitOfWork;
     }
 
     private async Task<Menu> GetMenuAsync(Guid id)
@@ -51,7 +51,7 @@ public class MenuCommandHandler :
 
         await _menuRepository.CreateAsync(newMenu);
 
-        await _unitOfWork.CommitAsync();
+        //await _unitOfWork.CommitAsync();
 
         return new MenuResponse(newMenu.Id, newMenu.Name, newMenu.Description, newMenu.Image);
     }
@@ -68,7 +68,7 @@ public class MenuCommandHandler :
 
         // await _menuRepository.Update(menu);
 
-        await _unitOfWork.CommitAsync();
+        //await _unitOfWork.CommitAsync();
 
         return new MenuResponse(menu.Id, menu.Name, menu.Description, menu.Image);
     }
@@ -92,7 +92,7 @@ public class MenuCommandHandler :
 
         //await _menuRepository.UpdateAsync(menu);
 
-        await _unitOfWork.CommitAsync();
+        //await _unitOfWork.CommitAsync();
 
         return new MenuDetailResponse(
             menu.Id,
@@ -109,13 +109,7 @@ public class MenuCommandHandler :
     {
         var menu = await GetMenuAsync(command.MenuId);
 
-        var category = menu.Categories.FirstOrDefault(x => x.Id == command.CategoryId);
-
-        var product = await _productRepository.GetByIdAsync(command.ProductId);
-
-        menu.AddProduct(product, category, command.ProductDescription, command.Price);
-
-        await _unitOfWork.CommitAsync();
+        menu.AddProduct(command.ProductId, command.ProductName, command.CategoryId, command.ProductDescription, command.Price);
 
         return new MenuDetailResponse(
             menu.Id,

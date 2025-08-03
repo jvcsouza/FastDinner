@@ -1,3 +1,4 @@
+using FastDinner.Application.Common.Interfaces;
 using FastDinner.Contracts.Menu;
 using MediatR;
 
@@ -8,4 +9,4 @@ public record UpdateMenuCommand (
     string Name,
     string Description,
     byte[] Image
-) : IRequest<MenuResponse>;
+) : ICommand<MenuResponse>;

@@ -6,7 +6,6 @@ using FastDinner.Api.Middleware;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using FastDinner.Infrastructure.Services;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

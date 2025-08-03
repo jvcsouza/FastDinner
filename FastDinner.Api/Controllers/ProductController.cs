@@ -14,8 +14,8 @@ namespace FastDinner.Api.Controllers
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class ProductController : ApiController
     {
-        public ProductController(ISender mediator, IUnitOfWork unitOfWork) 
-            : base(mediator, unitOfWork) { }
+        public ProductController(ISender mediator) 
+            : base(mediator) { }
 
         [HttpGet]
         public async Task<IActionResult> Get()

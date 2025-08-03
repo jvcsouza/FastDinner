@@ -7,15 +7,14 @@ using FastDinner.Application.Queries;
 using FastDinner.Contracts.Restaurant;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using FastDinner.Application.Common.Interfaces.Repositories;
 
 namespace FastDinner.Api.Controllers
 {
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class RestaurantController : ApiController
     {
-        public RestaurantController(ISender mediator, IUnitOfWork unitOfWork) 
-            : base(mediator, unitOfWork) { }
+        public RestaurantController(ISender mediator)
+            : base(mediator) { }
 
         [HttpGet]
         public async Task<IActionResult> Get()

@@ -1,3 +1,4 @@
+using FastDinner.Application.Common.Interfaces;
 using FastDinner.Contracts.Menu;
 using MediatR;
 
@@ -8,7 +9,7 @@ public record AddCategoryToMenuCommand(
     string CategoryName,
     string Description
     // List<CategoryMenuProduct> CategoryMenuProducts
-) : IRequest<MenuDetailResponse>;
+) : ICommand<MenuDetailResponse>;
 
 public record CategoryMenuProduct(
     Guid ProductId,

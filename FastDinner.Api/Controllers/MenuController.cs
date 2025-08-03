@@ -14,8 +14,8 @@ namespace FastDinner.Api.Controllers
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     public class MenuController : ApiController
     {
-        public MenuController(ISender mediator, IUnitOfWork unitOfWork) 
-            : base(mediator, unitOfWork) { }
+        public MenuController(ISender mediator)
+            : base(mediator) { }
 
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -28,7 +28,7 @@ namespace FastDinner.Api.Controllers
         [HttpGet("{menuId:guid}")]
         public async Task<IActionResult> Get(Guid menuId)
         {
-            // TODO: investigar o porquê desse código não funcionar, appscope do DbContext nulo
+            // TODO: investigar o porquï¿½ desse cï¿½digo nï¿½o funcionar, appscope do DbContext nulo
             //var menuRepository = DependencyResolver.Get<IMenuRepository>();
             //var menu = await menuRepository.GetByIdAsync(menuId);
 
@@ -104,6 +104,7 @@ namespace FastDinner.Api.Controllers
                 request.MenuId,
                 request.CategoryId,
                 request.ProductId,
+                request.ProductName,
                 request.ProductDescription,
                 request.Price
             ));

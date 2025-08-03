@@ -48,8 +48,6 @@ namespace FastDinner.Infrastructure
                 new JoinableTaskFactory(new JoinableTaskContext())
                     .Run(tableStore.CreateIfNotExistsAsync);
 
-                // .GetAwaiter().GetResult();
-
                 return new AppSettings(tableStore, cache, repository);
             });
 

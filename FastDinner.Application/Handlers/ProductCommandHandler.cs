@@ -12,12 +12,10 @@ public class ProductCommandHandler :
     IRequestHandler<UpdateProductCommand, ProductResponse>
 {
     private readonly IProductRepository _productRepository;
-    //private readonly IUnitOfWork _unitOfWork;
 
     public ProductCommandHandler(IProductRepository productRepository)
     {
         _productRepository = productRepository;
-        //_unitOfWork = unitOfWork;
     }
 
     public async Task<ProductResponse> Handle(CreateProductCommand command, CancellationToken cancellationToken)

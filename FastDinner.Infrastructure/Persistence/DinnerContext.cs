@@ -32,6 +32,11 @@ public class DinnerContext : DbContext
             .Property(x => x.Ver)
             .IsRowVersion();
 
+        modelBuilder.Entity<MenuCategory>()
+            .HasOne(x => x.Menu)
+            .WithMany(x => x.Categories)
+            .HasForeignKey(x => x.MenuId);
+
         modelBuilder.Entity<Product>()
             .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
 
