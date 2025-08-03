@@ -1,14 +1,9 @@
 ﻿using System;
-using FastDinner.Application.Common.Interfaces.Repositories;
-using FastDinner.Application.Queries;
-using FastDinner.Contracts.Product;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FastDinner.Domain;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace FastDinner.Api.Controllers
 {

@@ -19,10 +19,13 @@
 		<ProjectReference Include="..\FastDinner.Infrastructure\FastDinner.Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Services\" />
+		<FilesToCopy Include="C:/PROJECTS/frontfastdinner/dist/frontfastdinner/browser/*.*" />
 	</ItemGroup>
 	<ItemGroup>
-		<FilesToCopy Include="C:/PROJECTS/frontfastdinner/dist/frontfastdinner/browser/*.*" />
+	  <Compile Remove="Services\**" />
+	  <Content Remove="Services\**" />
+	  <EmbeddedResource Remove="Services\**" />
+	  <None Remove="Services\**" />
 	</ItemGroup>
 	<Target Name="BuildAngular" BeforeTargets="Build">
 		<!-- Copia os arquivos do dist do Angular para a pasta wwwroot -->

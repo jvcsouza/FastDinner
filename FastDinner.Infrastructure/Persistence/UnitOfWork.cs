@@ -66,7 +66,7 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task<int> CommitAsync()
     {
-        var result = await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         var domainEntities = _context.ChangeTracker
             .Entries<Entity>()

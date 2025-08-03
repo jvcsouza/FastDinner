@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using FastDinner.Application.Common.Interfaces.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

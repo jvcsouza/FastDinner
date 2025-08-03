@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FastDinner.Application.Commands.Menu;
-using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Menu;
 using MediatR;
@@ -28,11 +27,9 @@ namespace FastDinner.Api.Controllers
         [HttpGet("{menuId:guid}")]
         public async Task<IActionResult> Get(Guid menuId)
         {
-            // TODO: investigar o porqu� desse c�digo n�o funcionar, appscope do DbContext nulo
-            //var menuRepository = DependencyResolver.Get<IMenuRepository>();
-            //var menu = await menuRepository.GetByIdAsync(menuId);
-
             var menus = await SendQueryAsync<MenuDetailResponse>(new MenuQueryById(menuId));
+
+            var e = Convert.ChangeType(new DateTime(), TypeCode.String);
 
             return Ok(menus);
         }

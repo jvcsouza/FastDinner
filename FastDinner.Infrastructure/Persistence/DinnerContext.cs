@@ -13,11 +13,13 @@ namespace FastDinner.Infrastructure.Persistence;
 
 public class DinnerContext : DbContext
 {
-    private readonly AppScope _appScope;
+    private readonly MultiTenancyService _multiTenancyService;
+    //private readonly AppScope _appScope;
 
-    public DinnerContext(DbContextOptions<DinnerContext> options, AppScope appScope) : base(options)
+    public DinnerContext(DbContextOptions<DinnerContext> options, MultiTenancyService multiTenancyService) : base(options)
     {
-        _appScope = appScope;
+        _multiTenancyService = multiTenancyService;
+        //_appScope = appScope;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,16 +40,16 @@ public class DinnerContext : DbContext
             .HasForeignKey(x => x.MenuId);
 
         modelBuilder.Entity<Product>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+            .HasQueryFilter(x => x.RestaurantId == _multiTenancyService.Restaurant.RestaurantId);
 
         modelBuilder.Entity<Employee>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+            .HasQueryFilter(x => x.RestaurantId == _multiTenancyService.Restaurant.RestaurantId);
 
         modelBuilder.Entity<Menu>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+            .HasQueryFilter(x => x.RestaurantId == _multiTenancyService.Restaurant.RestaurantId);
 
         modelBuilder.Entity<Order>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId)
+            .HasQueryFilter(x => x.RestaurantId == _multiTenancyService.Restaurant.RestaurantId)
             .HasOne(x => x.Table);
 
         modelBuilder.Entity<Order>()
@@ -62,10 +64,10 @@ public class DinnerContext : DbContext
             .HasOne(x => x.Customer);
 
         modelBuilder.Entity<Reservation>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+            .HasQueryFilter(x => x.RestaurantId == _multiTenancyService.Restaurant.RestaurantId);
 
         modelBuilder.Entity<Table>()
-            .HasQueryFilter(x => x.RestaurantId == _appScope.RestaurantId);
+            .HasQueryFilter(x => x.RestaurantId == _multiTenancyService.Restaurant.RestaurantId);
 
         modelBuilder.Entity<Customer>()
             .Property(x => x.Id)
@@ -85,7 +87,7 @@ public class DinnerContext : DbContext
         foreach (var property in ChangeTracker.Entries<IRestaurant>()
                      .Where(w => w.State == EntityState.Added && w.Entity.RestaurantId == default))
         {
-            property.Entity.RestaurantId = AppScope.Restaurant.RestaurantId;
+            property.Entity.RestaurantId = _multiTenancyService.Restaurant.RestaurantId;
 
             cancellationToken.ThrowIfCancellationRequested();
         }

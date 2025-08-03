@@ -6,7 +6,15 @@
     <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <Compile Remove="Common\Implements\**" />
+    <Compile Remove="Common\Interfaces\Wrappers\**" />
+    <EmbeddedResource Remove="Common\Implements\**" />
+    <EmbeddedResource Remove="Common\Interfaces\Wrappers\**" />
+    <None Remove="Common\Implements\**" />
+    <None Remove="Common\Interfaces\Wrappers\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
@@ -17,9 +25,5 @@
   <ItemGroup>
     <ProjectReference Include="..\FastDinner.Domain\FastDinner.Domain.csproj" />
     <ProjectReference Include="..\FastDinner.Contracts\FastDinner.Contracts.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\Implements\" />
-    <Folder Include="Common\Interfaces\Wrappers\" />
   </ItemGroup>
 </Project>

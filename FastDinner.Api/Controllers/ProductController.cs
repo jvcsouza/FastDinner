@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FastDinner.Application.Commands.Product;
-using FastDinner.Application.Common.Interfaces.Repositories;
 using FastDinner.Application.Queries;
 using FastDinner.Contracts.Product;
 using MediatR;

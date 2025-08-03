@@ -18,6 +18,8 @@ public class Menu : Entity, IRestaurant
     public string Image { get; set; }
     public Guid RestaurantId { get; set; }
     public bool Main { get; set; }
+    
+    // ReSharper disable once UnassignedGetOnlyAutoProperty
     public byte[] Ver { get; }
 
     public virtual Restaurant Restaurant { get; set; }

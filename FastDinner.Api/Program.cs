@@ -16,6 +16,9 @@ builder.Host
 //builder.Services.AddSingleton<IDependencyResolver, DependencyResolver>(
 //    options => new DependencyResolver(options.CreateScope()));
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddHttpContextAccessor();
+
 builder.Services
     .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration);

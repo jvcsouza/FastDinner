@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using FastDinner.Application.Common.Interfaces.Services;
-using FastDinner.Application.Common;
 
 namespace FastDinner.Api.Middleware;
 
@@ -25,14 +24,16 @@ public class ApplicationMiddleware
             return;
         }
 
-        BaseContext.UseContext(context);
+        //BaseContext.UseContext(context);
+        
         await CreateApplicationScope(context, appSettings);
+        
         await _next(context);
     }
 
     private static async Task CreateApplicationScope(HttpContext context, IAppSettings appSettings)
     {
-        if (!context.Request.Headers.TryGetValue("x-restaurant-id", out var restaurantIdHeader))
+        if (!context.Request.Headers.TryGetValue("x-restaurant-id", out var restaurantIdFromHeader))
             throw new InvalidOperationException("Restaurant identification not informed!");
 
         var tenant = string.Empty;
@@ -40,11 +41,14 @@ public class ApplicationMiddleware
             tenant = tenantHeader;
 
         tenant ??= context.Request.Host.Host;
-        var resGuid = Guid.Parse(restaurantIdHeader);
+        var resGuid = Guid.Parse(restaurantIdFromHeader);
 
         var (tenantSettings, restaurantSettings) = await appSettings.GetSettingsAsync(tenant, resGuid);
 
-        TenantScope.CreateScope(tenantSettings);
-        RestaurantScope.CreateScope(restaurantSettings);
+        //TenantScope.CreateScope(tenantSettings);
+        //RestaurantScope.CreateScope(restaurantSettings);
+        
+        context.Items["tenant_key"] = tenantSettings;
+        context.Items["restaurant_key"] = restaurantSettings;
     }
 }

@@ -1,6 +1,6 @@
 using FastDinner.Application.Commands.Menu;
-using FastDinner.Application.Common;
 using FastDinner.Application.Common.Interfaces.Repositories;
+using FastDinner.Application.Common.Interfaces.Services;
 using FastDinner.Contracts.Menu;
 using FastDinner.Domain.Model;
 using MediatR;
@@ -16,17 +16,18 @@ public class MenuCommandHandler :
     // private readonly IRestaurantRepository _restaurantRepository;
     // private readonly ICurrentUserService _currentUserService;
     // private readonly IMapper _mapper;
+    private readonly IMultiTenancyService _multiTenancyService;
     private readonly IMenuRepository _menuRepository;
-    private readonly IProductRepository _productRepository;
+    //private readonly IProductRepository _productRepository;
     //private readonly IUnitOfWork _unitOfWork;
     private readonly IRestaurantRepository _restaurantRepository;
 
-    public MenuCommandHandler(IMenuRepository menuRepository, IProductRepository productRepository,
-        IRestaurantRepository restaurantRepository)
+    public MenuCommandHandler(IMultiTenancyService multiTenancyService, IMenuRepository menuRepository, IRestaurantRepository restaurantRepository)
     {
+        _multiTenancyService = multiTenancyService;
         _menuRepository = menuRepository;
         _restaurantRepository = restaurantRepository;
-        _productRepository = productRepository;
+        //_productRepository = productRepository;
         //_unitOfWork = unitOfWork;
     }
 
@@ -38,7 +39,7 @@ public class MenuCommandHandler :
 
     public async Task<MenuResponse> Handle(CreateMenuCommand command, CancellationToken cancellationToken)
     {
-        var restaurantId = AppScope.Restaurant.RestaurantId;
+        var restaurantId = _multiTenancyService.Restaurant.RestaurantId;
 
         var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
 

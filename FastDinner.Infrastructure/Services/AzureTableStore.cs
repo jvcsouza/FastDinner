@@ -4,30 +4,28 @@ using FastDinner.Application.Common.Interfaces.Services;
 using FastDinner.Infrastructure.Utils;
 using Newtonsoft.Json;
 using System.Reflection;
+using FastDinner.Domain.Model;
 
 namespace FastDinner.Infrastructure.Services
 {
     public class AzureTableStore : ITableStore
     {
         private readonly TableClient _client;
-        private readonly MethodInfo _methodQuery;
-        private readonly MethodInfo _methodFind;
 
         public AzureTableStore(string connectionStr, string tableName)
         {
 #if DEBUG
-            _client = new TableClient("DefaultEndpointsProtocol=https;AccountName=fastdinner;AccountKey=1beIqkfV9+1uiqeu952tstRguVF5c0r6DGMTzDHQYgG1kDM002WAfctkeJAr2EIuJZCYsx++8P94+AStUIktlA==;EndpointSuffix=core.windows.net", tableName);
+            _client = new TableClient(
+                "DefaultEndpointsProtocol=https;AccountName=fastdinner;AccountKey=1beIqkfV9+1uiqeu952tstRguVF5c0r6DGMTzDHQYgG1kDM002WAfctkeJAr2EIuJZCYsx++8P94+AStUIktlA==;EndpointSuffix=core.windows.net",
+                tableName);
 #else
             _client = new TableClient(connectionStr, tableName);
 #endif
-            _methodQuery = typeof(TableClient).GetMethod("Query",
-                new[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });
+        }
 
-            _methodFind = typeof(TableClient).GetMethod("GetEntity",
-                new[] { typeof(string), typeof(string), typeof(IEnumerable<string>), typeof(CancellationToken) });
-
-            //_method = typeof(TableClient).GetMethod("QueryAsync",
-            //    new Type[] { typeof(string), typeof(int?), typeof(IEnumerable<string>), typeof(CancellationToken) });
+        public void CreateIfNotExists()
+        {
+            _client.CreateIfNotExists();
         }
 
         public async Task CreateIfNotExistsAsync()
@@ -35,43 +33,34 @@ namespace FastDinner.Infrastructure.Services
             await _client.CreateIfNotExistsAsync();
         }
 
-        public Task<List<T>> GetAllPartitionsAsync<T>(string partitionKey) where T : class
+        public async Task<List<T>> GetAllPartitionsAsync<T>(string partitionKey) where T : class, new()
         {
-            var request = (dynamic)_methodQuery
-                .MakeGenericMethod(TypeBuilder.CopyWithParent<T, StoreItem>())
-                .Invoke(_client, new object[] { $"PartitionKey eq '{partitionKey}'", null, null, default(CancellationToken) });
+            var entities = _client.QueryAsync<TableEntity>($"PartitionKey eq '{partitionKey}'");
 
             var lst = new List<T>();
 
-            if (request == null) return Task.FromResult(lst);
-
-            foreach (var i in request)
+            await foreach (var entity in entities)
             {
-                lst.Add(JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject((object)i)));
+                lst.Add(TableEntityMap<T>.Map(entity));
             }
 
-            return Task.FromResult(lst);
+            return lst;
         }
 
-        public async Task<T> FindAsync<T>(string partitionKey, Guid rowKey) where T : class
+        public async Task<T> FindAsync<T>(string partitionKey, Guid rowKey) where T : class, new()
         {
-            //var properties = typeof(T).GetProperties();
+            try
+            {
+                var entity = await _client.GetEntityAsync<TableEntity>(partitionKey, rowKey.ToString().ToUpper());
 
-            //Console.WriteLine(_methodFind is null);
+                var response = entity.GetRawResponse();
 
-            //var request = (dynamic)_methodFind
-            //    .MakeGenericMethod(new Type[] { MyTypeBuilder.CompileResultType(properties) })
-            //    .Invoke(_client, new object[] { partitionKey, rowKey.ToString(), null, default(CancellationToken) });
-
-            //var rs = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(request));
-
-            //return Task.FromResult(rs);
-
-            var list = await GetAllPartitionsAsync<dynamic>(partitionKey);
-
-            var rs = list.FirstOrDefault(x => x.RowKey == rowKey.ToString().ToUpper());
-
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(rs));
+                return response.Content.ToObjectFromJson<T>();
+            }
+            catch (RequestFailedException ex) when (ex.Status == 404)
+            {
+                return default(T);
+            }
         }
 
         public async Task InsertAsync<T>(string partitionKey, T data) where T : class
@@ -81,15 +70,7 @@ namespace FastDinner.Infrastructure.Services
 
         public Task InsertAsync<T>(string partitionKey, Guid rowKey, T data) where T : class
         {
-            return Task.FromResult(true);
+            throw new NotImplementedException();
         }
-    }
-
-    public class StoreItem : ITableEntity
-    {
-        public string PartitionKey { get; set; }
-        public string RowKey { get; set; }
-        public DateTimeOffset? Timestamp { get; set; }
-        public ETag ETag { get; set; }
     }
 }

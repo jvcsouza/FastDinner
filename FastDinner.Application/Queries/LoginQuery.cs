@@ -1,6 +1,5 @@
 using FastDinner.Application.Common.Interfaces;
 using FastDinner.Contracts.Auth;
-using MediatR;
 
 namespace FastDinner.Application.Queries;
 

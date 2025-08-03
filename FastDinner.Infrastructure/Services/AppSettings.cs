@@ -20,23 +20,25 @@ namespace FastDinner.Infrastructure.Services
             _cache = cache;
             _restaurantRepository = restaurantRepository;
 
-            _tableStore.CreateIfNotExistsAsync()
-                .GetAwaiter().GetResult();
+            _tableStore.CreateIfNotExists();
         }
 
         public async Task<TenantSettings> GetTenantSettingsAsync(string tenant)
         {
-            return await _cache.GetOrAddAsync($"{tenant}{SUFIX}", async () =>
+            var key = $"{tenant}{SUFIX}";
+            
+            return await _cache.GetOrAddAsync(key, async () =>
             {
-                var lst = await _tableStore.GetAllPartitionsAsync<AppTenantSettings>($"{tenant}{SUFIX}");
+                var lst = await _tableStore.GetAllPartitionsAsync<AppTenantSettings>(key);
+                var e = await _tableStore.FindAsync<AppTenantSettings>(key,
+                    Guid.Parse("1567AD57-7324-4459-802D-913C7D986390"));
 
                 var setting = lst.FirstOrDefault();
 
                 if (setting?.Settings is null)
                     throw new InvalidOperationException("Tenant not found!");
-                
-                return setting?.Settings;
 
+                return setting.Settings;
             });
         }
 
@@ -48,17 +50,12 @@ namespace FastDinner.Infrastructure.Services
             {
                 var restaurant = await _restaurantRepository.Value.GetByIdAsync(restaurantId);
 
-                switch (restaurant)
-                {
-                    case null:
-                        throw new InvalidOperationException("Restaurant not found!");
+                if (restaurant is null)
+                    throw new InvalidOperationException("Restaurant not found!");
 
-                    default:
-                        {
-                            var resScope = new RestaurantSettings { Name = restaurant.Name, RestaurantId = restaurant.Id };
-                            return resScope;
-                        }
-                }
+                var resScope = new RestaurantSettings { Name = restaurant.Name, RestaurantId = restaurant.Id };
+
+                return resScope;
             });
 
             return (tenantSettings, restaurantSettings);

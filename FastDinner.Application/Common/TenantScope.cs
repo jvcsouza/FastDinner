@@ -20,6 +20,7 @@ namespace FastDinner.Application.Common
     public class AppTenantSettings
     {
         public string Data { get; set; }
+        public string ds { get; set; }
         public TenantSettings Settings => JsonSerializer.Deserialize<TenantSettings>(Data);
     }
 
@@ -31,6 +32,7 @@ namespace FastDinner.Application.Common
         public string Catalog { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
+        public string ds { get; set; }
     }
 
 }

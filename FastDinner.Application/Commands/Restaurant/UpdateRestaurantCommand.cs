@@ -1,6 +1,5 @@
 using FastDinner.Application.Common.Interfaces;
 using FastDinner.Contracts.Restaurant;
-using MediatR;
 
 namespace FastDinner.Application.Commands.Restaurant;
 
